@@ -1,4 +1,4 @@
-const tasks = [
+const intialData = [
     {
         _id: "5d2ca9e2e03d40b326596aa7",
         completed: true,
@@ -25,6 +25,8 @@ const tasks = [
     },
 ];
 
+const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
+
 (function (arrOfTasks) {
     const objOfTask = arrOfTasks.reduce((accumulator, currentTask) => {
         accumulator[currentTask._id] = currentTask;
@@ -32,9 +34,7 @@ const tasks = [
     }, {});
 
     // Element UI
-    const listContainer = document.querySelector(
-        ".tasks-list-section .list-group"
-    );
+    const listContainer = document.getElementById("list");
 
     const form = document.forms["addTask"];
     const inputTitle = form.elements["title"];
@@ -119,8 +119,18 @@ const tasks = [
             completed: false,
             _id: `task-${Math.random()}`,
         };
+        addToTaskList(newTask);
+        updateLocalStorage();
         objOfTask[newTask._id] = newTask;
 
         return { ...newTask };
+    }
+
+    function addToTaskList(task) {
+        tasks.unshift(task);
+    }
+
+    function updateLocalStorage() {
+        localStorage.setItem("task", JSON.stringify(tasks));
     }
 })(tasks);
