@@ -43,6 +43,7 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
     // Events
     renderAllTask(objOfTask);
     form.addEventListener("submit", onFormSubmitHandler);
+    listContainer.addEventListener("click", onDeleteHandler);
 
     function renderAllTask(tasks) {
         if (!tasks) {
@@ -69,6 +70,8 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
             "flex-wrap",
             "mt-2"
         );
+
+        li.setAttribute("data-task-id", _id);
         const span = document.createElement("span");
 
         span.textContent = title;
@@ -119,18 +122,60 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
             completed: false,
             _id: `task-${Math.random()}`,
         };
-        addToTaskList(newTask);
+        addToLocalStorage(newTask);
         updateLocalStorage();
         objOfTask[newTask._id] = newTask;
 
         return { ...newTask };
     }
 
-    function addToTaskList(task) {
+    function addToLocalStorage(task) {
         tasks.unshift(task);
+    }
+
+    function deleteTaskFromLocalStorage(task) {
+        const indexOfDeletedTask = tasks.findIndex((t) => {
+            return t._id === task._id;
+        });
+
+        const deletedTask = tasks.splice(indexOfDeletedTask, 1);
+        console.log(deletedTask);
     }
 
     function updateLocalStorage() {
         localStorage.setItem("task", JSON.stringify(tasks));
+    }
+
+    function deleteTask(id) {
+        const deletedTask = objOfTask[id];
+        const isConfirm = confirm(
+            `Do you want delete this task: ${deletedTask.title}`
+        );
+
+        if (!isConfirm) {
+            return isConfirm;
+        }
+
+        deleteTaskFromLocalStorage(deletedTask);
+        updateLocalStorage();
+
+        delete objOfTask[id];
+        return isConfirm;
+    }
+
+    function deleteTaskFromHtml(confirmed, element) {
+        if (!confirmed) {
+            return;
+        }
+        element.remove();
+    }
+
+    function onDeleteHandler(event) {
+        if (event.target.classList.contains("delete-btn")) {
+            const parent = event.target.closest("[data-task-id]");
+            const id = parent.dataset.taskId;
+            const confirmed = deleteTask(id);
+            deleteTaskFromHtml(confirmed, parent);
+        }
     }
 })(tasks);
