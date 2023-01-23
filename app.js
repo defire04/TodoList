@@ -1,4 +1,4 @@
-const intialData = [
+const initialData = [
     {
         _id: "5d2ca9e2e03d40b326596aa7",
         completed: true,
@@ -25,7 +25,7 @@ const intialData = [
     },
 ];
 
-const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
+const tasks = JSON.parse(localStorage.getItem("task")) || initialData;
 
 (function (arrOfTasks) {
     const objOfTask = arrOfTasks.reduce((accumulator, currentTask) => {
@@ -123,7 +123,7 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
             _id: `task-${Math.random()}`,
         };
         addToLocalStorage(newTask);
-        updateLocalStorage();
+       
         objOfTask[newTask._id] = newTask;
 
         return { ...newTask };
@@ -131,6 +131,7 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
 
     function addToLocalStorage(task) {
         tasks.unshift(task);
+        updateLocalStorage();
     }
 
     function deleteTaskFromLocalStorage(task) {
@@ -139,7 +140,7 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
         });
 
         const deletedTask = tasks.splice(indexOfDeletedTask, 1);
-        console.log(deletedTask);
+        updateLocalStorage();
     }
 
     function updateLocalStorage() {
@@ -157,17 +158,15 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
         }
 
         deleteTaskFromLocalStorage(deletedTask);
-        updateLocalStorage();
 
         delete objOfTask[id];
         return isConfirm;
     }
 
     function deleteTaskFromHtml(confirmed, element) {
-        if (!confirmed) {
-            return;
+        if (confirmed) {
+            element.remove();
         }
-        element.remove();
     }
 
     function onDeleteHandler(event) {
@@ -178,4 +177,5 @@ const tasks = JSON.parse(localStorage.getItem("task")) || intialData;
             deleteTaskFromHtml(confirmed, parent);
         }
     }
+
 })(tasks);
